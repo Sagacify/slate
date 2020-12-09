@@ -3,7 +3,6 @@ FROM ruby:2.6-slim
 WORKDIR /srv/slate
 
 VOLUME /srv/slate/build
-VOLUME /srv/slate/source
 
 EXPOSE 4567
 

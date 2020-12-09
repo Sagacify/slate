@@ -1,0 +1,24 @@
+version: 2
+
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: sagacify/docker-circle-ci2.0
+    steps:
+      - checkout
+      - setup_remote_docker
+      - deploy:
+          name: Push application Docker image to hub
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              echo "{\"https://index.docker.io/v1/\":{\"auth\":\"<AUTH>\",\"email\":\"<EMAIL>\"}}" | sed "s/<EMAIL>/$HUB_EMAIL/;s/<AUTH>/$HUB_AUTH/" > ~/.dockercfg
+              docker build -t sagacify/$CIRCLE_PROJECT_REPONAME:v$CIRCLE_BUILD_NUM -t sagacify/$CIRCLE_PROJECT_REPONAME:latest .
+              docker push sagacify/$CIRCLE_PROJECT_REPONAME
+            fi
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+          context: DockerHub
